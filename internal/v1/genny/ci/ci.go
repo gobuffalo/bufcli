@@ -3,6 +3,7 @@ package ci
 import (
 	"fmt"
 	"html/template"
+	"path"
 
 	"github.com/gobuffalo/genny"
 	"github.com/gobuffalo/genny/gogen"
@@ -20,6 +21,10 @@ func New(opts *Options) (*genny.Generator, error) {
 	g.Transformer(genny.Replace("-no-pop", ""))
 	g.Transformer(genny.Dot())
 
+	if opts.Provider == "github" || opts.Provider == "github-ci" {
+		g.Transformer(genny.Replace("github-ci.yml", path.Join(".github", "workflows", "tests.yml")))
+	}
+
 	box := packr.New("buffalo:genny:ci", "../ci/templates")
 
 	var fname string
@@ -32,6 +37,8 @@ func New(opts *Options) (*genny.Generator, error) {
 		} else {
 			fname = "-dot-gitlab-ci-no-pop.yml.tmpl"
 		}
+	case "github", "github-ci":
+		fname = "github-ci.yml.tmpl"
 	default:
 		return g, fmt.Errorf("could not find a template for %s", opts.Provider)
 	}
