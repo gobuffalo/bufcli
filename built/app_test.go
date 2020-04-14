@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -46,6 +47,34 @@ func Test_App_No_Args(t *testing.T) {
 	r.True(res)
 }
 
+func Test_App_No_Args_EmptyApp(t *testing.T) {
+	r := require.New(t)
+
+	app := &App{}
+
+	var args []string
+	ctx := context.Background()
+	err := app.Main(ctx, "", args)
+	r.NoError(err)
+}
+
+func Test_App_Original_Args(t *testing.T) {
+	r := require.New(t)
+
+	var res bool
+	app := &App{
+		OriginalMain: func() {
+			res = true
+		},
+	}
+
+	args := []string{"--", "bob"}
+	ctx := context.Background()
+	err := app.Main(ctx, "", args)
+	r.NoError(err)
+	r.True(res)
+}
+
 func Test_App_No_Args_Fallthrough(t *testing.T) {
 	r := require.New(t)
 
@@ -79,6 +108,18 @@ func Test_App_With_Args_Fallthrough(t *testing.T) {
 	err := app.Main(ctx, "", []string{"lee", "majors"})
 	r.NoError(err)
 	r.True(res)
+}
+
+func Test_App_With_Args_NoFallthrough(t *testing.T) {
+	r := require.New(t)
+
+	app := &App{}
+
+	ctx := context.Background()
+	root, err := os.Getwd()
+	r.NoError(err)
+	err = app.Main(ctx, root, []string{"lee", "majors"})
+	r.NoError(err)
 }
 
 func Test_App_Init_Plugins(t *testing.T) {

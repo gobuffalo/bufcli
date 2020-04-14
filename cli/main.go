@@ -23,18 +23,23 @@ func (b *Buffalo) Main(ctx context.Context, root string, args []string) error {
 
 	plugs := b.Plugins
 	for _, p := range plugs {
-		switch t := p.(type) {
-		case Needer:
+		if t, ok := p.(Needer); ok {
 			t.WithPlugins(pfn)
-		case StdinNeeder:
+		}
+
+		if t, ok := p.(StdinNeeder); ok {
 			if err := t.SetStdin(plugio.Stdin(plugs...)); err != nil {
 				return err
 			}
-		case StdoutNeeder:
+		}
+
+		if t, ok := p.(StdoutNeeder); ok {
 			if err := t.SetStdout(plugio.Stdout(plugs...)); err != nil {
 				return err
 			}
-		case StderrNeeder:
+		}
+
+		if t, ok := p.(StderrNeeder); ok {
 			if err := t.SetStderr(plugio.Stderr(plugs...)); err != nil {
 				return err
 			}

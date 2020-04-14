@@ -40,10 +40,6 @@ type Buffalo struct {
 func NewFromRoot(root string) (*Buffalo, error) {
 	b := &Buffalo{}
 
-	pfn := func() []plugins.Plugin {
-		return b.Plugins
-	}
-
 	b.Plugins = append(b.Plugins, clifix.Plugins()...)
 	b.Plugins = append(b.Plugins, cmds.Plugins()...)
 	b.Plugins = append(b.Plugins, fizz.Plugins()...)
@@ -75,7 +71,7 @@ func NewFromRoot(root string) (*Buffalo, error) {
 		return b.Plugins[i].PluginName() < b.Plugins[j].PluginName()
 	})
 
-	pfn = func() []plugins.Plugin {
+	pfn := func() []plugins.Plugin {
 		return b.Plugins
 	}
 

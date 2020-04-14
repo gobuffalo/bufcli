@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/gobuffalo/here"
+	"github.com/stretchr/testify/require"
 )
 
 type background string
@@ -30,4 +31,15 @@ func newRef(t *testing.T, root string) here.Info {
 	}
 
 	return info
+}
+
+func Test_Plugins(t *testing.T) {
+	r := require.New(t)
+	plugs := Plugins()
+	r.Len(plugs, 2)
+	for _, p := range plugs {
+		if p.PluginName() != "main" && p.PluginName() != "build" {
+			r.FailNow("should only be main and build")
+		}
+	}
 }

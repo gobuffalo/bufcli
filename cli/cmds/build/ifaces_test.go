@@ -3,6 +3,7 @@ package build
 import (
 	"context"
 	"flag"
+	"io"
 	"os/exec"
 
 	"github.com/spf13/pflag"
@@ -64,6 +65,9 @@ func (b *afterBuilder) PluginName() string {
 }
 
 func (b *afterBuilder) AfterBuild(ctx context.Context, root string, args []string, err error) error {
+	if b.err != nil {
+		return b.err
+	}
 	b.args = args
 	b.err = err
 	return err
@@ -204,4 +208,122 @@ func (bladeRunner) PluginName() string {
 func (b *bladeRunner) RunBuild(ctx context.Context, cmd *exec.Cmd) error {
 	b.cmd = cmd
 	return b.err
+}
+
+var _ Tagger = &buildTagger{}
+
+type buildTagger struct {
+	name string
+	tags []string
+	err  error
+}
+
+func (b *buildTagger) PluginName() string {
+	if len(b.name) == 0 {
+		return "buildTagger"
+	}
+	return b.name
+}
+
+func (b *buildTagger) BuildTags(ctx context.Context, root string) ([]string, error) {
+	return b.tags, b.err
+}
+
+var _ Stdouter = &buildStdouter{}
+
+type buildStdouter struct {
+	name   string
+	writer io.Writer
+}
+
+func (b *buildStdouter) PluginName() string {
+	if len(b.name) == 0 {
+		return "buildStdouter"
+	}
+	return b.name
+}
+
+func (b *buildStdouter) Stdout() io.Writer {
+	return b.writer
+}
+
+var _ Builder = &buildBuilder{}
+
+type buildBuilder struct {
+	name string
+	root string
+	err  error
+}
+
+func (b *buildBuilder) PluginName() string {
+	if len(b.name) == 0 {
+		return "buildBuilder"
+	}
+	return b.name
+}
+
+func (b *buildBuilder) Build(ctx context.Context, root string, args []string) error {
+	b.root = root
+	return b.err
+}
+
+var _ Namer = &buildNamer{}
+
+type buildNamer struct {
+	name    string
+	cmdName string
+	root    string
+	err     error
+}
+
+func (b *buildNamer) PluginName() string {
+	if len(b.name) == 0 {
+		return "buildNamer"
+	}
+	return b.name
+}
+
+func (b *buildNamer) Build(ctx context.Context, root string, args []string) error {
+	b.root = root
+	return b.err
+}
+
+func (b *buildNamer) CmdName() string {
+	return b.cmdName
+}
+
+var _ Aliaser = &buildAliaser{}
+
+type buildAliaser struct {
+	name    string
+	aliases []string
+	root    string
+	err     error
+}
+
+func (b *buildAliaser) PluginName() string {
+	if len(b.name) == 0 {
+		return "buildAliaser"
+	}
+	return b.name
+}
+
+func (b *buildAliaser) Build(ctx context.Context, root string, args []string) error {
+	b.root = root
+	return b.err
+}
+
+func (b *buildAliaser) CmdAliases() []string {
+	return b.aliases
+}
+
+var _ io.Writer = &badWriter{}
+
+type badWriter struct {
+	n   int
+	err error
+}
+
+func (bw *badWriter) Write(p []byte) (n int, err error) {
+	return bw.n, bw.err
 }

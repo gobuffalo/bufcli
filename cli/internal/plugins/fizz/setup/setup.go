@@ -8,7 +8,7 @@ import (
 
 	"github.com/gobuffalo/buffalo-cli/v2/cli/internal/plugins/pop/setup"
 	"github.com/gobuffalo/plugins"
-	"github.com/gobuffalo/pop"
+	"github.com/gobuffalo/pop/v5"
 )
 
 var _ plugins.Plugin = &Setup{}

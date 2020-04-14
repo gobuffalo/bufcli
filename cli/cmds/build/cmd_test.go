@@ -46,6 +46,8 @@ func Test_Cmd_ScopedPlugins(t *testing.T) {
 		&buildImporter{},
 		&bladeRunner{},
 		&packager{},
+		&buildTagger{},
+		&buildStdouter{},
 	}
 
 	bc := &Cmd{
