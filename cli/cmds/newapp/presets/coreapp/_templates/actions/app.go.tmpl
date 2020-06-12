@@ -30,7 +30,7 @@ func App() *buffalo.App {
 	if app == nil {
 		app = buffalo.New(buffalo.Options{
 			Env:         ENV,
-      SessionName: "_{{.Name}}_session",
+      		SessionName: "_{{.Name}}_session",
 		})
 
 		// Automatically redirect to SSL
