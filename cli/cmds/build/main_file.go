@@ -172,9 +172,9 @@ func (bc *MainFile) BeforeBuild(ctx context.Context, root string, args []string)
 var _ AfterBuilder = &MainFile{}
 
 func (bc *MainFile) AfterBuild(ctx context.Context, root string, args []string, err error) error {
-	info, err := bc.binaryFolderInfo(root)
+	info, berr := bc.binaryFolderInfo(root)
 	if err != nil {
-		return plugins.Wrap(bc, err)
+		return plugins.Wrap(bc, berr)
 	}
 
 	os.RemoveAll(filepath.Join(info.Dir, mainBuildFile))

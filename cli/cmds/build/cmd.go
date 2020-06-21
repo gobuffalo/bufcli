@@ -45,7 +45,7 @@ func (*Cmd) CmdAliases() []string {
 	return []string{"b", "install"}
 }
 
-func (b Cmd) PluginName() string {
+func (cmd Cmd) PluginName() string {
 	return "build"
 }
 
@@ -53,9 +53,9 @@ func (Cmd) Description() string {
 	return "Build the application binary, including bundling of webpack (packr & webpack)"
 }
 
-func (bc *Cmd) SubCommands() []plugins.Plugin {
+func (cmd *Cmd) SubCommands() []plugins.Plugin {
 	var plugs []plugins.Plugin
-	for _, p := range bc.ScopedPlugins() {
+	for _, p := range cmd.ScopedPlugins() {
 		if _, ok := p.(Builder); ok {
 			plugs = append(plugs, p)
 		}
@@ -63,13 +63,13 @@ func (bc *Cmd) SubCommands() []plugins.Plugin {
 	return plugs
 }
 
-func (bc *Cmd) ScopedPlugins() []plugins.Plugin {
-	if bc.pluginsFn == nil {
+func (cmd *Cmd) ScopedPlugins() []plugins.Plugin {
+	if cmd.pluginsFn == nil {
 		return nil
 	}
 
 	var plugs []plugins.Plugin
-	for _, p := range bc.pluginsFn() {
+	for _, p := range cmd.pluginsFn() {
 		switch p.(type) {
 		case BuildArger:
 			plugs = append(plugs, p)
