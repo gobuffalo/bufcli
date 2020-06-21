@@ -24,6 +24,34 @@ var _ plugins.Plugin = Builder{}
 
 const filePath = "/database.yml"
 
+var initCode = `
+package a
+
+import (
+	"bytes"
+	"log"
+	"fmt"
+
+	"github.com/gobuffalo/pop/v5"
+)
+
+func init() {
+	//findFile should be provided by packagers
+	file, err := findFile("database.yml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Content of database.yml", string(file))
+	  
+	r := bytes.NewReader(file)
+	err = pop.LoadFrom(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+`
+
 type Builder struct{}
 
 func (Builder) PluginName() string {
@@ -44,6 +72,10 @@ func (bd *Builder) GoBuildArgs(ctx context.Context, root string, args []string) 
 
 	x = append(x, []string{"-tags", strings.Join(tags, " ")}...)
 	return x, nil
+}
+
+func (bd *Builder) BeforeBuild(ctx context.Context, root string, args []string) error {
+	return ioutil.WriteFile(filepath.Join(root, "a", "pop.go"), []byte(initCode), 0777)
 }
 
 func (bd *Builder) RefreshTags(ctx context.Context, root string) ([]string, error) {

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/gobuffalo/buffalo-cli/v2/cli/cmds/build"
+	"github.com/gobuffalo/here"
 	"github.com/gobuffalo/packr/v2/jam"
 	"github.com/gobuffalo/plugins"
 	"github.com/gobuffalo/plugins/plugcmd"
@@ -27,11 +28,26 @@ import "github.com/gobuffalo/packr/v2"
 var (
 	box = packr.New("buffalo:a:files", "./")
 )
+
+func findFile(name string) ([]byte, error) {
+	return box.Find("database.yml")
+}
+
 `
 
 type Packager struct{}
 
 func (b *Packager) BeforeBuild(ctx context.Context, root string, args []string) error {
+	err := os.RemoveAll(filepath.Join(root, "a"))
+	if err != nil {
+		return err
+	}
+
+	err = os.Mkdir(filepath.Join(root, "a"), 0777)
+	if err != nil {
+		return err
+	}
+
 	return jam.Clean()
 }
 
@@ -53,19 +69,15 @@ func (b *Packager) Package(ctx context.Context, root string, files []string) err
 }
 
 func (b *Packager) BuildImports(ctx context.Context, root string) ([]string, error) {
-	return []string{"wawandco/agnte/a"}, nil
+	info, err := here.Current()
+	if err != nil {
+		return []string{}, plugins.Wrap(b, err)
+	}
+
+	return []string{filepath.Join(info.Module.Path, "a")}, nil
 }
 
 func (b *Packager) copyFiles(root string, files []string) error {
-	err := os.RemoveAll(filepath.Join(root, "a"))
-	if err != nil {
-		return err
-	}
-
-	err = os.Mkdir(filepath.Join(root, "a"), 0777)
-	if err != nil {
-		return err
-	}
 
 	for _, file := range files {
 		f, err := ioutil.ReadFile(filepath.Join(file))
