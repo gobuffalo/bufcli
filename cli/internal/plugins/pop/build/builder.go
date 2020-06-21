@@ -30,7 +30,6 @@ package a
 import (
 	"bytes"
 	"log"
-	"fmt"
 
 	"github.com/gobuffalo/pop/v5"
 )
@@ -41,8 +40,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Println("Content of database.yml", string(file))
 	  
 	r := bytes.NewReader(file)
 	err = pop.LoadFrom(r)
