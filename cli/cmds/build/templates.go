@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-  {{if .WithFallthrough -}}
+  	{{if .WithFallthrough -}}
 	appcli "{{.Info.Module.Path}}/cli"
 	{{end -}}
 
@@ -33,9 +33,9 @@ func main() {
 			Plugger:      cb,
 			BuildTime:    {{.BuildTime}},
 			BuildVersion: {{.BuildVersion}},
-		  {{if .WithFallthrough -}}
+		{{if .WithFallthrough -}}
 			Fallthrough:  appcli.Buffalo,
-			{{else -}}
+		{{else -}}
 			Fallthrough:  cb.Main,
 	    {{end -}}
 			OriginalMain: originalMain,

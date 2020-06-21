@@ -31,14 +31,18 @@ func (Builder) PluginName() string {
 }
 
 func (bd *Builder) GoBuildArgs(ctx context.Context, root string, args []string) ([]string, error) {
+	x := []string{}
+
 	tags, err := bd.RefreshTags(ctx, root)
 	if err != nil || len(tags) == 0 {
-		return args, err
+		return x, plugins.Wrap(bd, err)
 	}
+
 	if len(tags) == 0 {
-		return nil, nil
+		return x, nil
 	}
-	x := []string{"-tags", strings.Join(tags, " ")}
+
+	x = append(x, []string{"-tags", strings.Join(tags, " ")}...)
 	return x, nil
 }
 
@@ -59,11 +63,11 @@ func (bd *Builder) RefreshTags(ctx context.Context, root string) ([]string, erro
 	return args, nil
 }
 
-func (b *Builder) BuildVersion(ctx context.Context, root string) (string, error) {
+func (bd *Builder) BuildVersion(ctx context.Context, root string) (string, error) {
 	return cmd.Version, nil
 }
 
-func (b *Builder) PackageFiles(ctx context.Context, root string) ([]string, error) {
+func (bd *Builder) PackageFiles(ctx context.Context, root string) ([]string, error) {
 	return []string{
 		filepath.Join(root, filePath),
 	}, nil

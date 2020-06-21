@@ -2,7 +2,9 @@ package packr
 
 import (
 	"context"
-	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"github.com/gobuffalo/buffalo-cli/v2/cli/cmds/build"
 	"github.com/gobuffalo/packr/v2/jam"
@@ -11,9 +13,21 @@ import (
 )
 
 var _ build.BeforeBuilder = &Packager{}
+var _ build.Importer = &Packager{}
+var _ build.AfterBuilder = &Packager{}
 var _ build.Packager = &Packager{}
+
 var _ plugcmd.Namer = &Packager{}
 var _ plugins.Plugin = &Packager{}
+
+var boxTemplate = `
+package a
+import "github.com/gobuffalo/packr/v2"
+
+var (
+	box = packr.New("buffalo:a:files", "./")
+)
+`
 
 type Packager struct{}
 
@@ -21,17 +35,55 @@ func (b *Packager) BeforeBuild(ctx context.Context, root string, args []string) 
 	return jam.Clean()
 }
 
+func (b *Packager) AfterBuild(ctx context.Context, root string, args []string, err error) error {
+	return os.RemoveAll(filepath.Join(root, "a"))
+}
+
 func (b *Packager) Package(ctx context.Context, root string, files []string) error {
-	if len(files) > 0 {
-		fmt.Printf("%s does not support additional files\n", b.PluginName())
-		for _, f := range files {
-			fmt.Printf("\t> %s\n", f)
-		}
+	err := b.copyFiles(root, files)
+	if err != nil {
+		return plugins.Wrap(b, err)
 	}
-	err := jam.Pack(jam.PackOptions{
+
+	err = jam.Pack(jam.PackOptions{
 		Roots: []string{root},
 	})
+
 	return plugins.Wrap(b, err)
+}
+
+func (b *Packager) BuildImports(ctx context.Context, root string) ([]string, error) {
+	return []string{"wawandco/agnte/a"}, nil
+}
+
+func (b *Packager) copyFiles(root string, files []string) error {
+	err := os.RemoveAll(filepath.Join(root, "a"))
+	if err != nil {
+		return err
+	}
+
+	err = os.Mkdir(filepath.Join(root, "a"), 0777)
+	if err != nil {
+		return err
+	}
+
+	for _, file := range files {
+		f, err := ioutil.ReadFile(filepath.Join(file))
+		if err != nil {
+			return err
+		}
+
+		_, filename := filepath.Split(file)
+
+		err = ioutil.WriteFile(filepath.Join(root, "a", filename), f, 0777)
+		if err != nil {
+			return err
+		}
+	}
+
+	ioutil.WriteFile(filepath.Join(root, "a", "a.go"), []byte(boxTemplate), 0777)
+
+	return nil
 }
 
 func (b Packager) PluginName() string {
