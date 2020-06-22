@@ -62,7 +62,10 @@ func (b *Packager) Package(ctx context.Context, root string, files []string) err
 	}
 
 	err = jam.Pack(jam.PackOptions{
-		Roots: []string{root},
+		Roots: []string{
+			root,
+			filepath.Join(root, "a"),
+		},
 	})
 
 	return plugins.Wrap(b, err)
