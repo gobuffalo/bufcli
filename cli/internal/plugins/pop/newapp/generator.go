@@ -78,7 +78,7 @@ func (g *Generator) addDatabaseConfig(root, name string) error {
 		Root string
 		Name string
 	}{
-		Root: root,
+		Root: root + string(filepath.Separator),
 		Name: name,
 	}
 

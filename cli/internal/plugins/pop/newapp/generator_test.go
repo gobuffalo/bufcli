@@ -30,23 +30,22 @@ func Test_AddModels(t *testing.T) {
 
 func Test_addDatabaseConfig(t *testing.T) {
 	r := require.New(t)
+	root, err := ioutil.TempDir("", "")
+	r.NoError(err)
 
 	tcases := []struct {
 		databaseType    string
-		expectedContent string
+		expectedContent []string
 	}{
-		{"", "dialect: postgres"},
-		{"postgres", "dialect: postgres"},
-		{"mariadb", `dialect: "mariadb"`},
-		{"mysql", `dialect: "mysql"`},
-		{"cockroach", `dialect: cockroach`},
-		{"sqlite3", `dialect: "sqlite3"`},
+		{"", []string{"dialect: postgres"}},
+		{"postgres", []string{"dialect: postgres"}},
+		{"mariadb", []string{`dialect: "mariadb"`}},
+		{"mysql", []string{`dialect: "mysql"`}},
+		{"cockroach", []string{`dialect: cockroach`}},
+		{"sqlite3", []string{`dialect: "sqlite3"`, filepath.Join(root, "application_development.sqlite")}},
 	}
 
 	for _, tcase := range tcases {
-		root, err := ioutil.TempDir("", "")
-		r.NoError(err)
-
 		g := Generator{
 			databaseType: tcase.databaseType,
 			skip:         false,
@@ -59,7 +58,9 @@ func Test_addDatabaseConfig(t *testing.T) {
 		f, err := ioutil.ReadFile(filepath.Join(filepath.Join(root, "database.yml")))
 		r.NoError(err, tcase.databaseType)
 
-		r.Contains(string(f), tcase.expectedContent, tcase.databaseType)
+		for _, c := range tcase.expectedContent {
+			r.Contains(string(f), c, tcase.databaseType)
+		}
 	}
 
 }
