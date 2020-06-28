@@ -2,7 +2,7 @@
 ---
 development:
   dialect: cockroach
-  database: {{.opts.Prefix}}_development
+  database: {{.Name}}_development
   host: {{"{{"}} envOr "COCKROACH_HOST" "127.0.0.1"  }}
   port: {{"{{"}} envOr "COCKROACH_PORT" "26257"  }}
   user: {{"{{"}} envOr "COCKROACH_USER" "root"  }}
@@ -16,7 +16,7 @@ development:
 
 test:
   dialect: cockroach
-  database: {{.opts.Prefix}}_test
+  database: {{.Name}}_test
   host: {{"{{"}} envOr "COCKROACH_HOST" "127.0.0.1"  }}
   port: {{"{{"}} envOr "COCKROACH_PORT" "26257"  }}
   user: {{"{{"}} envOr "COCKROACH_USER" "root"  }}
@@ -30,7 +30,7 @@ test:
 
 production:
   dialect: cockroach
-  database: {{.opts.Prefix}}_production
+  database: {{.Name}}_production
   host: {{"{{"}} envOr "COCKROACH_HOST" "127.0.0.1"  }}
   port: {{"{{"}} envOr "COCKROACH_PORT" "26257"  }}
   user: {{"{{"}} envOr "COCKROACH_USER" "root"  }}

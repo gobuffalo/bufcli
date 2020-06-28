@@ -1,12 +1,12 @@
 ---
 development:
   dialect: "sqlite3"
-  database: {{.opts.Root}}_{{.opts.Prefix}}_development.sqlite
+  database: {{.Root}}_{{.Name}}_development.sqlite
 
 test:
   dialect: "sqlite3"
-  database: {{.opts.Root}}_{{.opts.Prefix}}_test.sqlite
+  database: {{.Root}}_{{.Name}}_test.sqlite
 
 production:
   dialect: "sqlite3"
-  database: {{.opts.Root}}_{{.opts.Prefix}}_production.sqlite
+  database: {{.Root}}_{{.Name}}_production.sqlite

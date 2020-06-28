@@ -16,7 +16,8 @@ var (
 )
 
 func init() {
-    DB, err := pop.Connect(env)
+	var err error
+	DB, err = pop.Connect(env)
 	if err != nil {
 		log.Fatal(err)
 	}

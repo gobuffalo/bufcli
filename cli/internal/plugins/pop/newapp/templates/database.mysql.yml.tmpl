@@ -1,7 +1,7 @@
 ---
 development:
   dialect: "mysql"
-  database: "{{.opts.Prefix}}_development"
+  database: "{{.Name}}_development"
   host: "localhost"
   port: "3306"
   user: "root"
@@ -12,12 +12,12 @@ test:
   #
   # You can use a single URL string for the same configuration:
   #
-  #url: "mysql://root:root@(localhost:3306)/{{.opts.Prefix}}_test?parseTime=true&multiStatements=true&readTimeout=3s"
+  #url: "mysql://root:root@(localhost:3306)/{{.Name}}_test?parseTime=true&multiStatements=true&readTimeout=3s"
   #
   # Note that if you use `url`, other configurations are silently ignored.
   # In this case, the URL must contain all required connection parameters.
   #
-  database: "{{.opts.Prefix}}_test"
+  database: "{{.Name}}_test"
   host: "localhost"
   port: "3306"
   user: "root"
@@ -27,10 +27,10 @@ production:
   #
   # You can also use environmental variables to override values in this config.
   #
-  #url: {{"{{"}}envOr "DATABASE_URL" "mysql://root:root@(localhost:3306)/{{.opts.Prefix}}_production?parseTime=true&multiStatements=true&readTimeout=3s"}}
+  #url: {{"{{"}}envOr "DATABASE_URL" "mysql://root:root@(localhost:3306)/{{.Name}}_production?parseTime=true&multiStatements=true&readTimeout=3s"}}
   #
   dialect: "mysql"
-  database: "{{.opts.Prefix}}_production"
+  database: "{{.Name}}_production"
   host: {{"{{"}}envOr "DATABASE_HOST" "localhost"}}
   port: {{"{{"}}envOr "DATABASE_PORT" "3306"}}
   user: {{"{{"}}envOr "DATABASE_USER" "root"}}

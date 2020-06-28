@@ -1,4 +1,4 @@
-require("expose-loader?$!expose-loader?jQuery!jquery");
+import $ from 'jquery';
 require("bootstrap/dist/js/bootstrap.bundle.js");
 
 $(() => {
